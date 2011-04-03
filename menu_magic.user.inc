@@ -25,8 +25,11 @@ function menu_magic_user_tab($wildcard) {
 }
 
 /**
- * Internal helper function that returns the top Google Image Search result
+ * Internal helper function that returns a random Google Image Search result
  * for a string, as a renderable Drupal element.
+ *
+ * See http://code.google.com/apis/imagesearch/v1/jsondevguide.html for more
+ * info on the Google Image Search JSON API.
  */
 function _magic_get_picture($username) {
   $google = 'https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=';
