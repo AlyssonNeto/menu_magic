@@ -1,4 +1,3 @@
-; $Id$
 name = Menu Magic
 description = The magical Drupal menu system.
 core = 7.x

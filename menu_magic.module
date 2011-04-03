@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * This is an example module to illustrate all the power and magic
@@ -14,163 +12,54 @@ function menu_magic_menu() {
   $items = array();
 
   /**
-   * This is a simple callback.
-   *
-   * This will create a path at http://example.com/magic. When visited, that
-   * URL will trigger the "menu_magic_page" function.
+   * This chunk of code defines a new menu item at the path 'magic'. When a user 
+   * with the 'access content' permission visits it, our menu_magic_basic
+   * function will be called to build the page's content.
    */
   $items['magic'] = array(
-    'title' => 'Menu Magic!',
-    'page callback' => 'menu_magic_page',
-    'access callback' => 'menu_magic_page_access',
+    'title' => 'A little magic',
+    'page callback' => 'menu_magic_basic',
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'file' => 'menu_magic.basic.inc', // Drupal will auto-include this file
     'type' => MENU_NORMAL_ITEM,
   );
 
   /**
-   * This is a simple callback that returns a renderable instead of just a plain ol' string.
+   * This one defines a menu item beneath 'magic' that requires an additional
+   * argument in the URL. 'magic/1', 'magic/fred', and so on are all valid.
+   * The 'wildcard' value will be passed to the page callback, and the callback
+   * is responsible for doing something with it. 
    */
-  $items['magic2'] = array(
-    'title' => 'Menu Magic!',
-    'page callback' => 'menu_magic_renderable_page',
-    'access callback' => 'menu_magic_page_access',
-    'type' => MENU_NORMAL_ITEM,
-  );
-
-  /**
-   * Another menu item, this time with arguments and nesting in the menu
-   * hierarchy.
-   */
-  $items['admin/settings/magic'] = array(
-    'title' => 'Menu Magic Settings',
-    'description' => 'Configure settings for menu magic module',
-    'page callback' => 'menu_magic_admin_page',
-    'access callback' => 'user_access', // Optional
-    'access arguments' => array('administer site configuration'),
-    'type' => MENU_NORMAL_ITEM,
-  );
-
-  /**
-   * User page callback with dynamic wildcard.
-   */
-  $items['user/%/magic_1'] = array(
-    'title' => 'Magic 1',
-    'page callback' => 'menu_magic_user_page',
+  $items['magic/%'] = array(
+    'title' => 'Even more magical!',
+    'page callback' => 'menu_magic_extra',
     'page arguments' => array(1),
-    'access callback' => 'menu_magic_user_page_access',
-    'access arguments' => array(1),
-    'type' => MENU_LOCAL_TASK,
-    'weight' => 5,
+    'access callback' => 'menu_magic_page_access',
+    'file' => 'menu_magic.extra.inc',
+    'type' => MENU_NORMAL_ITEM,
   );
 
   /**
-   * User page callback with dynamic wildcard, autoloader, and page split.
-   *
-   * This is exactly the same menu definition as above, but uses some fancy
-   * menu system tricks.
+   * The User module already defines a page at the path 'user/%', and this
+   * chunk of code defines an additional page just underneath it. Because
+   * the type of this ite is MENU_LOCAL_TASK, it appears as a tab on the user
+   * profile page rather than a standalone menu item.
    */
-  $items['user/%user/magic_2'] = array(
-    'title' => 'Magic 2',
-    'page callback' => 'menu_magic_user_lazy_page',
+  $items['user/%/magic'] = array(
+    'title' => 'Magic',
+    'description' => 'Magical magic for users',
+    'page callback' => 'menu_magic_user_tab',
     'page arguments' => array(1),
-    'access callback' => 'menu_magic_user_lazy_page_access',
-    'access arguments' => array(1),
-    'file' => 'menu_magic.pages.inc',
+    'access callback' => 'user_access',
+    'access arguments' => array('administer users'),
+    'file' => 'menu_magic.user.inc',
     'type' => MENU_LOCAL_TASK,
-    'weight' => 5
   );
 
   return $items;
 }
 
-/**
- * Access callback for menu_magic_page. The current user will only be granted
- * access to the page 'magic' if this function returns TRUE.
- */
-// hook_node_access($node, $op, $account)
 function menu_magic_page_access() {
-  global $user;
-
-  if ($user->uid == 1) {
-    return TRUE;
-  }
-}
-
-/**
- * Page callback for 'magic'. This is the function that will get called
- * everytime a user visits http://example.com/magic.
- */
-function menu_magic_page() {
-  return t('Hello World!');
-}
-
-/**
- * Page callback for 'magic2'. This is the function that will get called
- * everytime a user visits http://example.com/magic2. Unlike menu_magic_page
- * this callback returns a renderable.
- */
-function menu_magic_renderable_page() {
-  return array(
-    'first_paragraph' => array(
-      '#type' => 'markup',
-      '#markup' => 'Hello World!',
-    ),
-  );
-}
-
-/**
- * Page callback for 'admin/settings/magic'. Return the settings form.
- */
-function menu_magic_admin_page() {
-  return drupal_get_form('menu_magic_admin_settings');
-}
-
-/**
- * Form definition for 'admin/settings/magic' settings form.
- */
-function menu_magic_admin_settings() {
-  $form = array();
-
-  $form['menu_magic_belief'] = array(
-    '#type' => 'radios',
-    '#title' => t('Do you believe in magic?'),
-    '#options' => array(0 => t('No'), 1 => t('Yes')),
-    '#default_value' => variable_get('menu_magic_belief', 1),
-  );
-
-  return system_settings_form($form);
-}
-
-/**
- * Access callback for 'user/UID/magic'.
- */
-function menu_magic_user_page_access($uid) {
-  global $user;
-
-  // Load the account for the person whose account we're viewing.
-  $account = user_load($uid);
-
-  if (($account->uid == $user->uid) || user_access('administer users')) {
-    return TRUE;
-  }
-}
-
-/**
- * Page callback for the user tab.
- */
-function menu_magic_user_page($uid) {
-  // Load the account for the person whose account we're viewing.
-  $account = user_load($uid);
-
-  return t('%name believes in magic!', array('%name' => $account->name));
-}
-
-/**
- * Access callback for 'user/UID/magic' - autoloader style.
- */
-function menu_magic_user_lazy_page_access($account) {
-  global $user;
-
-  if (($account->uid == $user->uid) || user_access('administer users')) {
-    return TRUE;
-  }
+  return TRUE;
 }
