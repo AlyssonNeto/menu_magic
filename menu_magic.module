@@ -59,11 +59,14 @@ function menu_magic_menu() {
 
 
   /**
-   * This one defines a Local Task to each node, just like the example above.
-   * However, it uses the 'context' setting to move its link to the Contextual
-   * Links dropdown that appears next to each node. In addition, it uses a
-   * named wildcard in its path -- %node -- to automatically load ensure that
-   * the ID in the path is a valid node id, then load the node.
+   * This one defines a Local Task much like the "node edit" link.
+   * It's a normal menu item, but it uses the 'context' setting to move its link
+   * to the Contextual Links dropdown that appears next to each node.
+   * 
+   * In addition, it uses a named wildcard in its path -- %node. Like the generic
+   * '%' wildcard, it allows many values, but Drupal will automatically verify
+   * that the value is a node id, load the full node, and pass it on to the
+   * page callback.
    */
   $items['node/%node/magic'] = array(
     'title' => 'Magic',
