@@ -57,9 +57,47 @@ function menu_magic_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
+
+  /**
+   * This one defines a Local Task to each node, just like the example above.
+   * However, it uses the 'context' setting to move its link to the Contextual
+   * Links dropdown that appears next to each node. In addition, it uses a
+   * named wildcard in its path -- %node -- to automatically load ensure that
+   * the ID in the path is a valid node id, then load the node.
+   */
+  $items['node/%node/magic'] = array(
+    'title' => 'Magic',
+    'description' => 'Do amazing and magical things',
+    'page callback' => 'menu_magic_node_context',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'file' => 'menu_magic.context.inc',
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_INLINE,
+  );
+
+
   return $items;
 }
 
+
+
+/**
+ * This is a menu access callback; it can accept parameters from the menu items
+ * that call it, and determine if the current user should be allowed to see the
+ * page in question. This one always returns TRUE: it's not very discriminating.
+ */
 function menu_magic_page_access() {
   return TRUE;
+}
+
+
+/**
+ * This hook tells Drupal what URL paths should use the Administration theme and
+ * the 'Overlay' popup window.
+ */
+function menu_magic_admin_paths() {
+  return array(
+    'node/*/magic' => TRUE,
+  );
 }
