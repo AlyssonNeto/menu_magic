@@ -37,7 +37,7 @@ function menu_magic_menu() {
     'page arguments' => array(1),
     'access callback' => 'menu_magic_page_access',
     'file' => 'menu_magic.extra.inc',
-    'type' => MENU_NORMAL_ITEM,
+    'type' => MENU_CALLBACK,
   );
 
   /**
